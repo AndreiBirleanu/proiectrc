@@ -19,6 +19,51 @@
 
 /* codul de eroare returnat de anumite apeluri */
 extern int errno;
+int getidfor(char usr[]){
+  MYSQL *con = mysql_init(NULL);
+
+  if (con == NULL)
+  {
+      fprintf(stderr, "%s\n", mysql_error(con));
+      exit(1);
+  }
+
+  if (mysql_real_connect(con, "localhost", "andrei", "admin",
+          NULL, 0, NULL, 0) == NULL)
+  {
+      fprintf(stderr, "%s\n", mysql_error(con));
+      mysql_close(con);
+      exit(1);
+  }
+
+   if (mysql_query(con, "USE proiectretele"))
+  {
+      fprintf(stderr, "%s\n", mysql_error(con));
+      mysql_close(con);
+      exit(1);
+  }
+
+  
+  char id[10]="";
+  
+  char aflaid[256]="Select id from Useri where  user ='";
+  strcat(aflaid,usr);
+  strcat(aflaid,"'");
+  if(mysql_query(con,aflaid)){
+      fprintf(stderr, "%s\n", mysql_error(con));
+      mysql_close(con);
+      exit(1);    
+  }
+ MYSQL_RES *result = mysql_store_result(con);
+
+  MYSQL_ROW row;
+  if((row=mysql_fetch_row(result))){
+  strcpy(id,row[0]);
+  }
+  int idint=atoi(id);
+  return idint;
+
+}
 
 int newmess(char usr1[],char usr2[],int sd){
   MYSQL *con = mysql_init(NULL);
