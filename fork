@@ -1,4 +1,58 @@
-int pid;
+void gotmess(int sd,char usr1[],char usr2[])
+{
+  int n;
+  int i,j;
+	    if(read (sd, &n, sizeof(n)) <= 0)
+	    {
+			perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+	    }
+    
+  char mesaj[256]="";
+    
+    	for(i=0;i<n;i++)
+	{
+      		for(j=0;j<2;j++)
+		{
+       			 if(j==0)
+			 {
+				 if(read (sd, &n, sizeof(n)) <= 0)
+				    {
+				    }
+				   // printf("in transmitere_prefix %d\n",n );
+				 if(read (sd, mesaj, n) <= 0)
+				    {
+				    }
+				   // printf("in transmitere_prefix %s\n",send );		   
+          			printf("[%s]  ",mesaj);
+          			memset(mesaj,'\0',256);
+      			  }
+			  else
+			  {
+          
+				  if(read (sd, &n, sizeof(n)) <= 0)
+				    {
+				    }
+				    
+				 if(read (sd, mesaj, n) <= 0)
+				    {
+				    }
+				  
+
+          			 printf("%s\n",mesaj);
+       			         memset(mesaj,'\0',256);
+       			 }
+    		  }
+   	 }
+    
+    
+}	
+	
+	
+	
+	
+	
+	
+	int pid;
     if((pid=fork())==-1){
     	perror("fork");
     }else{
