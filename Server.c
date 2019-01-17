@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <mysql.h>
 
 /* portul folosit */
 #define PORT 2024
@@ -64,8 +65,7 @@ int getidfor(char usr[]){
   return idint;
 
 }
-
-int newmess(char usr1[],char usr2[],int sd){
+int newmess(char usr1[],char usr2[],int sd2){
   MYSQL *con = mysql_init(NULL);
 
     if (con == NULL)
@@ -105,7 +105,7 @@ int newmess(char usr1[],char usr2[],int sd){
    strcat(showlastmess,id1);
 
    strcat(showlastmess,") and seen like 0 order by id_m");
-   printf("query ul este %s\n",showlastmess  );
+   //printf("query ul este %s\n",showlastmess  );
 
     if(mysql_query(con,showlastmess)){
         fprintf(stderr, "%s\n", mysql_error(con));
@@ -117,10 +117,10 @@ int newmess(char usr1[],char usr2[],int sd){
    int num_rows=mysql_num_rows(result);
   // printf("avem atatea randuri xxx %d\n",num_rows );
     MYSQL_ROW row;    
-    if(write (sd, &num_rows, sizeof(num_rows)) <= 0)
+    if(write (sd2, &num_rows, sizeof(num_rows)) <= 0)
         {
          
-         perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+        // perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
         }
               if(num_rows==0)
         return 0;
@@ -134,15 +134,15 @@ int newmess(char usr1[],char usr2[],int sd){
              //printf("[%s]  ", row[i] ? row[i] : "NULL"); 
           //else
            //printf("%s   ", row[i] ? row[i] : "NULL"); 
-        //transmitere_prefix(sd,row[i]);
+        //transmitere_prefix(sd2,row[i]);
             int n=strlen(row[i]);
-            if(write (sd, &n, sizeof(n)) <= 0)
+            if(write (sd2, &n, sizeof(n)) <= 0)
               {
                
                //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
               }
               printf("in transmitere_prefix %d\n",n );
-           if(write (sd, row[i], n) <= 0)
+           if(write (sd2, row[i], n) <= 0)
               {
                
               // perror ("[Client] Eroare la transmiterea prefixata(send)\n");
@@ -180,10 +180,10 @@ int main ()
   struct sockaddr_in from;  
   char msg[100];    //mesajul primit de la client 
   char msgrasp[100]=" ";        //mesaj de raspuns pentru client
-  int sd;     //descriptorul de socket 
+  int sd2;     //descriptorul de socket 
 
   /* crearea unui socket */
-  if ((sd = socket (AF_INET, SOCK_STREAM, 0)) == -1)
+  if ((sd2 = socket (AF_INET, SOCK_STREAM, 0)) == -1)
     {
       perror ("[server]Eroare la socket().\n");
       return errno;
@@ -202,14 +202,14 @@ int main ()
     server.sin_port = htons (PORT);
   
   /* atasam socketul */
-  if (bind (sd, (struct sockaddr *) &server, sizeof (struct sockaddr)) == -1)
+  if (bind (sd2, (struct sockaddr *) &server, sizeof (struct sockaddr)) == -1)
     {
       perror ("[server]Eroare la bind().\n");
       return errno;
     }
 
   /* punem serverul sa asculte daca vin clienti sa se conecteze */
-  if (listen (sd, 5) == -1)
+  if (listen (sd2, 5) == -1)
     {
       perror ("[server]Eroare la listen().\n");
       return errno;
@@ -225,7 +225,7 @@ int main ()
       fflush (stdout);
 
       /* acceptam un client (stare blocanta pina la realizarea conexiunii) */
-      client = accept (sd, (struct sockaddr *) &from, &length);
+      client = accept (sd2, (struct sockaddr *) &from, &length);
 
       /* eroare la acceptarea conexiunii de la un client */
       if (client < 0)
@@ -239,29 +239,32 @@ int main ()
       printf ("[server]Asteptam mesajul...\n");
       fflush (stdout);
       int n;
-      if(write (sd, &n, sizeof(n)) <= 0)
-              {
-               
-               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
-              }
-      if(write (sd, usrl, n) <= 0)
-              {
-               
-               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
-              }
-              if(write (sd, &n, sizeof(n)) <= 0)
-              {
-               
-               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
-              }
-      if(write (sd, usr2, n) <= 0)
-              {
-               
-               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
-              }
-
+      
       while(1){
-        if(newmess(usrl,usr2,sd)){
+                
+                
+                  if(read (sd2, &n, sizeof(n)) <= 0)
+                    {
+                     
+                     //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+                    }
+                  if(read (sd2, usrl, n) <= 0)
+                    {
+                     
+                     //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+                    }
+                 
+                  if(read (sd2, &n, sizeof(n)) <= 0)
+                    {
+                     
+                     //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+                    }
+                  if(read (sd2, usr2, n) <= 0)
+                    {
+                     
+                     //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+                    }
+        if(newmess(usrl,usr2,sd2)){
           //avem mesaj
         }else{
           //nu avem mesaj
