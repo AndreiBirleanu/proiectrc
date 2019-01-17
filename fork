@@ -1,0 +1,96 @@
+ while(strcmp(who,"quit")){
+    memset(who,'\0',256);
+    
+    //de acum pot sa primesc mesaje si sa mi le arate 
+    //doar de la userul 2 nu de la userul logat
+    
+    //printf("%s  >", usrl);
+    int pid;
+    if((pid=fork())==-1){
+    	perror("fork");
+    }else{
+    	if(pid){//parinte aici vom astepta mesaje si vom afisa daca sunt
+    			  /* stabilim portul */
+				  write(0,usrl,sizeof(usrl));
+			    write(0,"  >",3);
+			    read(0,who,sizeof(who));
+			    
+			    
+			    nr=strlen(who);
+			    strcpy(who+nr-1,who+nr);
+			    //printf("%s\n",who );
+			    //printf("ar trb sa fie doar un enter\n");
+			    transmitere_prefix(sd,who);
+			    receptionare_prefix(sd,ok);
+			    if(!strcmp(ok,"OK")){
+			    	//printf("l-a bagat boss, ar trb sa l afisam sus\n");
+			    }else{
+			    	//printf("nu l-a bagat boss :(\n");
+			    }
+
+    	}else{//copil aici scriem mesajele
+    			
+			    port = atoi ("2024");
+				  int sd2;
+				  /* cream socketul */
+				  if ((sd2 = socket (AF_INET, SOCK_STREAM, 0)) == -1)
+				    {
+				      perror ("Eroare la socket().\n");
+				      return errno;
+				    }
+
+				  /* umplem structura folosita pentru realizarea conexiunii cu serverul */
+				  /* familia socket-ului */
+				  server.sin_family = AF_INET;
+				  /* adresa IP a serverului */
+				  server.sin_addr.s_addr = inet_addr("127.0.0.1");
+				  /* portul de conectare */
+				  server.sin_port = htons (port);
+				  
+				  /* ne conectam la server */
+				  if (connect (sd2, (struct sockaddr *) &server,sizeof (struct sockaddr)) == -1)
+				    {
+				      perror ("[client]Eroare la connect().\n");
+				      return errno;
+				    }
+				    while(1){
+				    	if(write (sd2, sd, sizeof(sd)) <= 0)
+			              {
+			               
+			               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+			              }
+			          int n=strlen(usr1);
+			          	if(write (sd2, n, sizeof(n)) <= 0)
+			              {
+			               
+			               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+			              }
+			            if(write (sd2, usrl, n) <= 0)
+			              {
+			               
+			               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+			              }
+			           int n=strlen(user2);
+			          	if(write (sd2, n, sizeof(n)) <= 0)
+			              {
+			               
+			               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+			              }
+			            if(write (sd2, user2, n) <= 0)
+			              {
+			               
+			               //perror ("[Client] Eroare la transmiterea prefixata(prefix)\n");
+			              }
+
+				    }
+				    close (sd2);
+			  
+
+    		}
+    }
+    
+    
+
+	
+	
+}
